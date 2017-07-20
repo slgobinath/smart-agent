@@ -25,6 +25,7 @@ public class Cluster {
                     Cluster.this.broadcast();
                 } else {
                     Cluster.this.clusterName = null;
+                    Cluster.this.reset();
                 }
             }
         });
@@ -42,4 +43,7 @@ public class Cluster {
 
     }
 
+    public void reset() {
+
+    }
 }

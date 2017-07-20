@@ -1,4 +1,4 @@
-package com.javahelps.smartagent.activity;
+package com.javahelps.smartagent.view.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

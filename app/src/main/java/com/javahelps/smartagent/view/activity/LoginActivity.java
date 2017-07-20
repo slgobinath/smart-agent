@@ -1,4 +1,4 @@
-package com.javahelps.smartagent.activity;
+package com.javahelps.smartagent.view.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
