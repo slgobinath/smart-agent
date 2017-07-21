@@ -7,10 +7,6 @@
             android:icon="@drawable/ic_menu_home"
             android:title="Home" />
         <item
-            android:id="@+id/nav_user"
-            android:icon="@drawable/ic_menu_user"
-            android:title="User" />
-        <item
             android:id="@+id/nav_permission"
             android:icon="@drawable/ic_menu_permission"
             android:title="Permission" />
@@ -20,7 +16,7 @@
             android:title="Manage" />
     </group>
 
-    <item android:title="Communicate">
+    <item>
         <menu>
             <item
                 android:id="@+id/nav_logout"

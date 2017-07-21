@@ -2,6 +2,7 @@ package com.javahelps.smartagent.view.activity;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,37 +12,39 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.javahelps.smartagent.R;
+import com.javahelps.smartagent.util.GoogleAuthenticator;
 import com.javahelps.smartagent.view.fragment.HomeFragment;
 import com.javahelps.smartagent.view.fragment.OnFragmentInteractionListener;
 import com.javahelps.smartagent.view.fragment.PermissionFragment;
-import com.javahelps.smartagent.view.fragment.UserFragment;
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+public class HomeActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        OnFragmentInteractionListener,
+        GoogleAuthenticator.UserChangeListener {
 
     private static final String TAG = "HomeActivity";
+    private ProgressDialog progressDialog;
+    private TextView txtUsername;
+    private GoogleAuthenticator googleAuthenticator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        Log.i("HomeActivity", "starting activity");
+        this.progressDialog = new ProgressDialog(this);
+        this.progressDialog.setMessage("Loading...");
+        this.googleAuthenticator = new GoogleAuthenticator(this, this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,8 +54,16 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        this.txtUsername = (TextView) header.findViewById(R.id.txtUsername);
 
         changeFragment(new HomeFragment());
+
+        if (this.googleAuthenticator.getUser() == null) {
+            this.googleAuthenticator.signIn();
+        } else {
+            this.onChange(this.googleAuthenticator.getUser());
+        }
     }
 
     @Override
@@ -66,32 +77,13 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "onActivityResult");
-    }
 
-    //    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+        if (requestCode == GoogleAuthenticator.RC_SIGN_IN) {
+            this.googleAuthenticator.setActivityResult(data);
+        }
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -105,19 +97,19 @@ public class HomeActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             // Handle the camera action
             fragment = new HomeFragment();
-        } else if (id == R.id.nav_user) {
-            fragment = new UserFragment();
         } else if (id == R.id.nav_permission) {
             fragment = new PermissionFragment();
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {
-
+            this.googleAuthenticator.signOut();
         }
 
-        this.changeFragment(fragment);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (fragment != null) {
+            this.changeFragment(fragment);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
@@ -127,26 +119,38 @@ public class HomeActivity extends AppCompatActivity
      * @param fragment
      */
     private void changeFragment(Fragment fragment) {
-        Log.i("HomeActivity", "Changing the fragment");
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.content, fragment)
-//                .commit();
 
-        // Create new fragment and transaction
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
-
-// Commit the transaction
         transaction.commit();
     }
 
     @Override
     public void onFragmentInteraction(Fragment fragment, String command) {
 
+    }
+
+
+    @Override
+    public void onChange(FirebaseUser user) {
+        this.hideProgressDialog();
+        if (user == null) {
+            Toast.makeText(this, "Please sign in to use this application", Toast.LENGTH_LONG).show();
+            this.finish();
+        } else {
+            Toast.makeText(this, "Welcome back " + user.getDisplayName() + "!", Toast.LENGTH_SHORT).show();
+            this.txtUsername.setText(user.getEmail());
+        }
+    }
+
+    @Override
+    public void showProgressDialog() {
+        this.progressDialog.show();
+    }
+
+    @Override
+    public void hideProgressDialog() {
+        this.progressDialog.hide();
     }
 }
