@@ -22,8 +22,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.MainActivity">
-        </activity>
+        <meta-data
+            android:name="com.google.android.nearby.messages.API_KEY"
+            android:value="AIzaSyCMdOtiCsChTpE1Bg60wceNa19rrU4Lf44" />
+
+        <activity android:name=".view.activity.MainActivity"></activity>
         <activity
             android:name=".view.activity.LoginActivity"
             android:label="@string/title_activity_login" />

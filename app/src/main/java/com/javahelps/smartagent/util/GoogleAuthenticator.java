@@ -72,10 +72,8 @@ public class GoogleAuthenticator implements GoogleApiClient.OnConnectionFailedLi
     }
 
     public void revokeAccess() {
-        // Firebase sign out
-        firebaseAuth.signOut();
 
-        // Google revoke access
+        firebaseAuth.signOut();
         Auth.GoogleSignInApi.revokeAccess(googleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override

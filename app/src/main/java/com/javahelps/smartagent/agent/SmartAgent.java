@@ -1,5 +1,6 @@
 package com.javahelps.smartagent.agent;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.util.Log;
 
@@ -17,12 +18,14 @@ public class SmartAgent {
     private final Context context;
     private final Device device;
     private final Cluster cluster;
+    private final AlarmManager alarmManager;
 
     public SmartAgent(Context context) {
 
         this.context = context;
         this.device = new Device(context);
         this.cluster = new Cluster(context);
+        this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
     public void start() {
@@ -41,7 +44,7 @@ public class SmartAgent {
             Log.i(TAG, String.format("Computing power for %s is %d", sensor.toString(), computingPower));
             if (computingPower > 0) {
                 // Able to process locally
-                if (computingPower >= Config.HIGH_COMPUTING_POWER) {
+                if (computingPower >= Config.NORMAL_COMPUTING_POWER) {
                     sensor.retrieve();
                 }
             }

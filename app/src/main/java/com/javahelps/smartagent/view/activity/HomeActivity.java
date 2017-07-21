@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.javahelps.smartagent.R;
+import com.javahelps.smartagent.communication.D2DCommunicationComponent;
 import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.GoogleAuthenticator;
 import com.javahelps.smartagent.util.Utility;
@@ -37,6 +38,7 @@ public class HomeActivity extends AppCompatActivity implements
     private GoogleAuthenticator googleAuthenticator;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
+    private D2DCommunicationComponent d2DCommunicationComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +69,9 @@ public class HomeActivity extends AppCompatActivity implements
             this.googleAuthenticator.signIn();
         } else {
             this.onChange(this.googleAuthenticator.getUser());
-            this.checkNonGrantedPermissions();
         }
+
+        this.d2DCommunicationComponent = new D2DCommunicationComponent(this);
     }
 
     @Override
@@ -87,6 +90,12 @@ public class HomeActivity extends AppCompatActivity implements
 
         if (requestCode == GoogleAuthenticator.RC_SIGN_IN) {
             this.googleAuthenticator.setActivityResult(data);
+        } else if (requestCode == D2DCommunicationComponent.REQUEST_RESOLVE_ERROR) {
+            if (resultCode == RESULT_OK) {
+                d2DCommunicationComponent.connect();
+            } else {
+                Log.e(TAG, "GoogleApiClient connection failed. Unable to resolve.");
+            }
         }
     }
 
@@ -127,7 +136,7 @@ public class HomeActivity extends AppCompatActivity implements
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
+//        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -137,6 +146,14 @@ public class HomeActivity extends AppCompatActivity implements
             if (Constant.Command.ALL_PERMISSIONS_GRANTED.equals(command)) {
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 toggle.setDrawerIndicatorEnabled(true);
+            }
+        } else if (fragment instanceof HomeFragment) {
+            if ("CONNECT".equals(command)) {
+                d2DCommunicationComponent.connect();
+            } else if ("DISCONNECT".equals(command)) {
+                d2DCommunicationComponent.disconnect();
+            } else if ("SEND".equals(command)) {
+                d2DCommunicationComponent.publish("Hello world2");
             }
         }
     }
@@ -168,7 +185,14 @@ public class HomeActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, "Welcome back " + user.getDisplayName() + "!", Toast.LENGTH_SHORT).show();
             this.txtUsername.setText(user.getEmail());
+            this.checkNonGrantedPermissions();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        this.progressDialog.dismiss();
+        super.onDestroy();
     }
 
     @Override
