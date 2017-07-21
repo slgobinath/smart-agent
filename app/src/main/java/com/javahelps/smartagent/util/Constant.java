@@ -46,4 +46,13 @@ public class Constant {
 
         public static final String HUMIDITY = "HUMIDITY";
     }
+
+    public static class Command {
+
+        private Command() {
+
+        }
+
+        public static final String ALL_PERMISSIONS_GRANTED = "granted";
+    }
 }

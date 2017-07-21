@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.javahelps.smartagent.R;
+import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.GoogleAuthenticator;
+import com.javahelps.smartagent.util.Utility;
 import com.javahelps.smartagent.view.fragment.HomeFragment;
 import com.javahelps.smartagent.view.fragment.OnFragmentInteractionListener;
 import com.javahelps.smartagent.view.fragment.PermissionFragment;
@@ -33,6 +35,8 @@ public class HomeActivity extends AppCompatActivity implements
     private ProgressDialog progressDialog;
     private TextView txtUsername;
     private GoogleAuthenticator googleAuthenticator;
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +50,8 @@ public class HomeActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        this.drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        this.toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -63,6 +67,7 @@ public class HomeActivity extends AppCompatActivity implements
             this.googleAuthenticator.signIn();
         } else {
             this.onChange(this.googleAuthenticator.getUser());
+            this.checkNonGrantedPermissions();
         }
     }
 
@@ -128,7 +133,29 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentInteraction(Fragment fragment, String command) {
+        if (fragment instanceof PermissionFragment) {
+            if (Constant.Command.ALL_PERMISSIONS_GRANTED.equals(command)) {
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                toggle.setDrawerIndicatorEnabled(true);
+            }
+        }
+    }
 
+    private boolean checkNonGrantedPermissions() {
+        String[] nonGrantedPermissions = Utility.nonGrantedPermissions(getApplicationContext());
+
+        if (nonGrantedPermissions.length > 0) {
+            // There are some non granted permissions
+
+            // Disable user from moving to any other fragments without providing permissions
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            toggle.setDrawerIndicatorEnabled(false);
+
+            // Show permission fragment
+            changeFragment(new PermissionFragment());
+            return true;
+        }
+        return false;
     }
 
 
