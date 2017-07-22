@@ -4,16 +4,19 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.javahelps.smartagent.R;
+import com.javahelps.smartagent.util.Constant;
 
 public class HomeFragment extends Fragment {
 
     private OnFragmentInteractionListener listener;
+    private Button btnStart;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -38,27 +41,21 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.btnConnect).setOnClickListener(new View.OnClickListener() {
+        this.btnStart = (Button) view.findViewById(R.id.btnStart);
+        this.btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("HomeFragment", "Connecting");
-                listener.onFragmentInteraction(HomeFragment.this, "CONNECT");
-            }
-        });
-
-        view.findViewById(R.id.btnSend).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("HomeFragment", "Sending http request");
-                listener.onFragmentInteraction(HomeFragment.this, "SEND");
-            }
-        });
-
-        view.findViewById(R.id.btnDisconnect).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("HomeFragment", "Disconnecting");
-                listener.onFragmentInteraction(HomeFragment.this, "DISCONNECT");
+                if (Constant.Command.START.equals(btnStart.getText().toString())) {
+                    // Start
+                    btnStart.setText(Constant.Command.STOP);
+                    listener.onFragmentInteraction(HomeFragment.this, Constant.Command.START);
+                    Toast.makeText(getActivity(), "Smart Agent is started", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Stop
+                    btnStart.setText(Constant.Command.START);
+                    listener.onFragmentInteraction(HomeFragment.this, Constant.Command.STOP);
+                    Toast.makeText(getActivity(), "Smart Agent is stopped", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

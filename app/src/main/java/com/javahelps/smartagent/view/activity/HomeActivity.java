@@ -153,12 +153,10 @@ public class HomeActivity extends AppCompatActivity implements
                 toggle.setDrawerIndicatorEnabled(true);
             }
         } else if (fragment instanceof HomeFragment) {
-            if ("CONNECT".equals(command)) {
+            if (Constant.Command.START.equals(command)) {
                 this.smartAgent.start();
-
-            } else if ("DISCONNECT".equals(command)) {
+            } else if (Constant.Command.STOP.equals(command)) {
                 this.smartAgent.stop();
-            } else if ("SEND".equals(command)) {
             }
         }
     }

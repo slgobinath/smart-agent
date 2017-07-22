@@ -54,6 +54,10 @@ public class Constant {
         }
 
         public static final String ALL_PERMISSIONS_GRANTED = "ALL_PERMISSIONS_GRANTED";
+
+        public static final String START = "START";
+
+        public static final String STOP = "STOP";
     }
 
     public static class Common {

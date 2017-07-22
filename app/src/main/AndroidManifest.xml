@@ -26,13 +26,10 @@
             android:name="com.google.android.nearby.messages.API_KEY"
             android:value="AIzaSyCMdOtiCsChTpE1Bg60wceNa19rrU4Lf44" />
 
-        <activity android:name=".view.activity.MainActivity"></activity>
-        <activity
-            android:name=".view.activity.LoginActivity"
-            android:label="@string/title_activity_login" />
         <activity
             android:name=".view.activity.HomeActivity"
             android:label="@string/title_activity_home"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
