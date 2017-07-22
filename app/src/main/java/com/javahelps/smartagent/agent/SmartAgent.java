@@ -78,9 +78,6 @@ public class SmartAgent {
                 }
             }
         }
-
-        Map<String, Object[]> data = this.device.getSensorData();
-        Log.i(TAG, data.toString());
     }
 
     public void sendDeviceData() {

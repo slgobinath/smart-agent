@@ -14,7 +14,6 @@ import com.javahelps.smartagent.R;
 public class HomeFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-//    HTTPCommunicationComponent dataTrasmitor;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -28,7 +27,6 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        this.dataTrasmitor = new HTTPCommunicationComponent(this.getActivity());
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 

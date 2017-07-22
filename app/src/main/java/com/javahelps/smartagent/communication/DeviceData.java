@@ -53,4 +53,14 @@ public class DeviceData implements Serializable {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "DeviceData{" +
+                "users=" + users +
+                ", computingPower=" + computingPower +
+                ", active=" + active +
+                ", sensorDataMap=" + sensorDataMap +
+                '}';
+    }
 }

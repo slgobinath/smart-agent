@@ -57,6 +57,7 @@ public class CoordinationComponent implements ResponseListener {
                 clusterCommunication.disconnect();
                 if (currentDeviceData.isActive()) {
                     Log.i(TAG, "Sending device data to the server " + currentDeviceData.getUser());
+                    serviceCommunication.send(currentDeviceData);
                 }
             }
         }, Config.TIME_TO_WAIT_FOR_OTHERS);

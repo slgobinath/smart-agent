@@ -30,7 +30,7 @@ public abstract class EnvironmentSensor extends Sensor implements SensorEventLis
 
     @Override
     public final void onSensorChanged(SensorEvent event) {
-        this.listener.onSuccess(this.toString(), event.values[0]);
+        this.listener.onSuccess(this.toString(), event.values[0], (float) event.accuracy);
         this.sensorManager.unregisterListener(this);
     }
 

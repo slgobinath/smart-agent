@@ -44,7 +44,11 @@ public class LocationSensor extends Sensor implements OnSuccessListener<Location
 
     @Override
     public void onSuccess(Location location) {
-        this.listener.onSuccess(Constant.Sensor.LOCATION, location);
+        if (location != null) {
+            this.listener.onSuccess(Constant.Sensor.LOCATION, location.getLatitude(), location.getLongitude(), location.getAccuracy());
+        } else {
+            this.listener.onSuccess(Constant.Sensor.LOCATION, 0.0, 0.0, 0.0f);
+        }
     }
 
     @Override

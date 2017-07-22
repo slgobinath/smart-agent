@@ -4,13 +4,14 @@ import android.content.Context;
 import android.util.Log;
 
 import com.javahelps.smartagent.communication.DeviceData;
+import com.javahelps.smartagent.communication.SensorData;
 import com.javahelps.smartagent.sensor.Sensor;
 import com.javahelps.smartagent.sensor.SensorListener;
 import com.javahelps.smartagent.util.Config;
 import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.Session;
 
-import java.util.Arrays;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class Device {
 
     private final Context context;
     private final Map<String, Sensor> sensors = new HashMap<>();
-    private final Map<String, Object[]> sensorData = new HashMap<>();
+    private final Map<String, SensorData> sensorData = new HashMap<>();
     private int lastBatteryLevel = -1;
     private long lastBatteryLevelTime;
     private Sensor batterySensor;
@@ -48,7 +49,12 @@ public class Device {
                     public void onSuccess(String sensor, Object... extras) {
                         if (extras != null) {
 //                            Log.i(TAG, "Received " + sensor + " " + Arrays.toString(extras));
-                            Device.this.sensorData.put(sensor, extras);
+
+                            if (Constant.Sensor.LOCATION.equals(sensor)) {
+                                Device.this.sensorData.put(sensor, new SensorData(sensor, (Float) extras[2], new double[]{(Double) extras[0], (Double) extras[1]}));
+                            } else {
+                                Device.this.sensorData.put(sensor, new SensorData(sensor, (Float) extras[1], (Serializable) extras[0]));
+                            }
 
                             if (Device.this.sensorData.size() == Device.this.sensors.size()) {
                                 Log.i(TAG, "All received");
@@ -56,6 +62,7 @@ public class Device {
                                 deviceData.setActive(true);
                                 deviceData.setComputingPower(Device.this.computingPower());
                                 deviceData.addUser((String) Session.INSTANCE.get(Constant.Common.USER_EMAIL));
+                                deviceData.setSensorDataMap(new HashMap<>(sensorData));
                                 Device.this.recentDeviceData = deviceData;
                             }
                         }
@@ -100,9 +107,6 @@ public class Device {
         return this.sensors.values();
     }
 
-    public Map<String, Object[]> getSensorData() {
-        return sensorData;
-    }
 
     public int computingPower(Sensor sensor) {
 

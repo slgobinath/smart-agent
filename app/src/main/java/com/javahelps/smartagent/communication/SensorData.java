@@ -8,6 +8,16 @@ public class SensorData implements Serializable {
     private float accuracy;
     private Serializable data;
 
+    public SensorData() {
+
+    }
+
+    public SensorData(String name, float accuracy, Serializable data) {
+        this.name = name;
+        this.accuracy = accuracy;
+        this.data = data;
+    }
+
     public String getName() {
         return name;
     }
@@ -30,5 +40,14 @@ public class SensorData implements Serializable {
 
     public void setData(Serializable data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "SensorData{" +
+                "name='" + name + '\'' +
+                ", accuracy=" + accuracy +
+                ", data=" + data +
+                '}';
     }
 }
