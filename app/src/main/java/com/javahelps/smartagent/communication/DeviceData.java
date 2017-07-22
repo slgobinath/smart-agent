@@ -1,23 +1,21 @@
 package com.javahelps.smartagent.communication;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Created by gobinath on 21/07/17.
- */
+public class DeviceData implements Serializable {
 
-public class DeviceData {
-
-    private String user;
+    private List<String> users;
     private int computingPower;
-    private List<SensorData> sensorDataList;
+    private Map<String, SensorData> sensorDataMap;
 
     public String getUser() {
-        return user;
+        return users.get(0);
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void addUser(String user) {
+        this.users.add(user);
     }
 
     public int getComputingPower() {
@@ -28,11 +26,21 @@ public class DeviceData {
         this.computingPower = computingPower;
     }
 
-    public List<SensorData> getSensorDataList() {
-        return sensorDataList;
+    public Map<String, SensorData> getSensorDataMap() {
+        return sensorDataMap;
     }
 
-    public void setSensorDataList(List<SensorData> sensorDataList) {
-        this.sensorDataList = sensorDataList;
+    public void setSensorDataMap(Map<String, SensorData> sensorDataMap) {
+        this.sensorDataMap = sensorDataMap;
+    }
+
+    public void merge(DeviceData deviceData) {
+        this.users.addAll(deviceData.users);
+        for (SensorData sensorData : deviceData.sensorDataMap.values()) {
+            SensorData thisSensorData = this.sensorDataMap.get(sensorData.getName());
+            if (thisSensorData.getAccuracy() < sensorData.getAccuracy()) {
+                thisSensorData.setData(sensorData.getData());
+            }
+        }
     }
 }

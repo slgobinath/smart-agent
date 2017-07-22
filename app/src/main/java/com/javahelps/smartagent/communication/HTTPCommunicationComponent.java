@@ -20,6 +20,7 @@ public class HTTPCommunicationComponent implements CommunicationComponent, Respo
 
     private static final String END_POINT_URL = "http://10.0.2.2:1024";
     private final RequestQueue queue;
+    private ResponseListener responseListener;
 
     public HTTPCommunicationComponent(Context context) {
         this.queue = Volley.newRequestQueue(context);
@@ -60,5 +61,10 @@ public class HTTPCommunicationComponent implements CommunicationComponent, Respo
     @Override
     public void onErrorResponse(VolleyError error) {
 
+    }
+
+    @Override
+    public void setListener(ResponseListener listener) {
+        this.responseListener = listener;
     }
 }

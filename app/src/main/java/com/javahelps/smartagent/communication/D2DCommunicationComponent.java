@@ -15,6 +15,7 @@ import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
 import com.google.gson.Gson;
+import com.javahelps.smartagent.util.Utility;
 
 public class D2DCommunicationComponent implements CommunicationComponent, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -27,6 +28,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
     private final Gson gson = new Gson();
     private Message activeMessage;
     private MessageListener messageListener;
+    private ResponseListener responseListener;
 
     public D2DCommunicationComponent(FragmentActivity activity) {
         this.activity = activity;
@@ -68,7 +70,14 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
 
     @Override
     public void send(DeviceData deviceData) {
+        Log.i(TAG, "Sending device data");
+        activeMessage = new Message(Utility.serialize(deviceData));
+        Nearby.Messages.publish(googleApiClient, activeMessage);
+    }
 
+    @Override
+    public void setListener(ResponseListener listener) {
+        this.responseListener = listener;
     }
 
 

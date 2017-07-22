@@ -7,4 +7,6 @@ public interface CommunicationComponent {
     void disconnect();
 
     void send(DeviceData deviceData);
+
+    void setListener(ResponseListener listener);
 }

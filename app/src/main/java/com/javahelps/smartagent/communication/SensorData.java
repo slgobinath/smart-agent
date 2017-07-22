@@ -1,10 +1,12 @@
 package com.javahelps.smartagent.communication;
 
-public class SensorData {
+import java.io.Serializable;
+
+public class SensorData implements Serializable {
 
     private String name;
     private float accuracy;
-    private Object data;
+    private Serializable data;
 
     public String getName() {
         return name;
@@ -22,11 +24,11 @@ public class SensorData {
         this.accuracy = accuracy;
     }
 
-    public Object getData() {
+    public Serializable getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(Serializable data) {
         this.data = data;
     }
 }
