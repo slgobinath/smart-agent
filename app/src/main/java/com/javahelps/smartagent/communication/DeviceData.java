@@ -48,8 +48,15 @@ public class DeviceData implements Serializable {
         this.users.addAll(deviceData.users);
         for (SensorData sensorData : deviceData.sensorDataMap.values()) {
             SensorData thisSensorData = this.sensorDataMap.get(sensorData.getName());
-            if (thisSensorData.getAccuracy() < sensorData.getAccuracy()) {
-                thisSensorData.setData(sensorData.getData());
+            if (thisSensorData == null) {
+                // Device doesn't have this type of sensor
+                this.sensorDataMap.put(sensorData.getName(), sensorData);
+            } else {
+                // Use the sensor
+                if (thisSensorData.getAccuracy() < sensorData.getAccuracy()) {
+                    thisSensorData.setData(sensorData.getData());
+                    thisSensorData.setAccuracy(sensorData.getAccuracy());
+                }
             }
         }
     }
