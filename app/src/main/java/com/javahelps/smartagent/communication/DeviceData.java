@@ -1,12 +1,13 @@
 package com.javahelps.smartagent.communication;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class DeviceData implements Serializable {
 
-    private List<String> users;
+    private List<String> users = new ArrayList<>();
     private int computingPower;
     private boolean active;
     private Map<String, SensorData> sensorDataMap;

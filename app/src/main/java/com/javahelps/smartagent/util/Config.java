@@ -11,7 +11,6 @@ public class Config {
     }
 
     public static final String[] SUPPORTED_SENSORS = {
-            /*Constant.Sensor.BATTERY,*/
             Constant.Sensor.HUMIDITY,
             Constant.Sensor.LIGHT,
             Constant.Sensor.LOCATION,
@@ -28,4 +27,10 @@ public class Config {
     public static final int NORMAL_COMPUTING_POWER = 5;
 
     public static final int LOW_COMPUTING_POWER = 2;
+
+    public static final int DATA_COLLECTION_INTERVAL = 10;  // In seconds
+
+    public static final int TIME_TO_COLLECT_DATA = 5000;  // In milliseconds
+
+    public static final int TIME_TO_WAIT_FOR_OTHERS = 1000;  // In milliseconds
 }

@@ -19,22 +19,20 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.javahelps.smartagent.R;
+import com.javahelps.smartagent.agent.SmartAgent;
 import com.javahelps.smartagent.communication.D2DCommunicationComponent;
 import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.GoogleAuthenticator;
-import com.javahelps.smartagent.util.TaskScheduler;
+import com.javahelps.smartagent.util.Session;
 import com.javahelps.smartagent.util.Utility;
 import com.javahelps.smartagent.view.fragment.HomeFragment;
 import com.javahelps.smartagent.view.fragment.OnFragmentInteractionListener;
 import com.javahelps.smartagent.view.fragment.PermissionFragment;
 
-import java.util.Date;
-
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener,
-        GoogleAuthenticator.UserChangeListener,
-        TaskScheduler.Task {
+        GoogleAuthenticator.UserChangeListener {
 
     private static final String TAG = "HomeActivity";
     private ProgressDialog progressDialog;
@@ -43,7 +41,7 @@ public class HomeActivity extends AppCompatActivity implements
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private D2DCommunicationComponent d2DCommunicationComponent;
-    private TaskScheduler taskScheduler;
+    private SmartAgent smartAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +80,7 @@ public class HomeActivity extends AppCompatActivity implements
         }
 
         this.d2DCommunicationComponent = new D2DCommunicationComponent(this);
-        this.taskScheduler = new TaskScheduler(this);
+        this.smartAgent = new SmartAgent(this);
     }
 
     @Override
@@ -154,14 +152,11 @@ public class HomeActivity extends AppCompatActivity implements
             }
         } else if (fragment instanceof HomeFragment) {
             if ("CONNECT".equals(command)) {
-//                d2DCommunicationComponent.connect();
-                this.taskScheduler.start();
+                this.smartAgent.start();
 
             } else if ("DISCONNECT".equals(command)) {
-//                d2DCommunicationComponent.disconnect();
+                this.smartAgent.stop();
             } else if ("SEND".equals(command)) {
-//                d2DCommunicationComponent.publish("Hello world2");
-                this.taskScheduler.stop();
             }
         }
     }
@@ -192,7 +187,10 @@ public class HomeActivity extends AppCompatActivity implements
             this.finish();
         } else {
             Toast.makeText(this, "Welcome back " + user.getDisplayName() + "!", Toast.LENGTH_SHORT).show();
-            this.txtUsername.setText(user.getEmail());
+
+            String email = user.getEmail();
+            Session.INSTANCE.set(Constant.Common.USER_EMAIL, email);
+            this.txtUsername.setText(email);
             this.checkNonGrantedPermissions();
         }
     }
@@ -211,10 +209,5 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void hideProgressDialog() {
         this.progressDialog.hide();
-    }
-
-    @Override
-    public void execute() {
-        Log.i(TAG, "Scheduled task at " + new Date());
     }
 }

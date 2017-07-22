@@ -53,6 +53,15 @@ public class Constant {
 
         }
 
-        public static final String ALL_PERMISSIONS_GRANTED = "granted";
+        public static final String ALL_PERMISSIONS_GRANTED = "ALL_PERMISSIONS_GRANTED";
+    }
+
+    public static class Common {
+
+        private Common() {
+
+        }
+
+        public static final String USER_EMAIL = "USER_EMAIL";
     }
 }

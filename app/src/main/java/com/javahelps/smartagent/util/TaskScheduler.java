@@ -12,15 +12,18 @@ public class TaskScheduler {
     private static final String TAG = "TaskScheduler";
 
     private Timer timer;
-    private static final long INTERVAL = 10000;  // 10 sec
+    private long intervalInMillis;
+    private int intervalInSec;
     private Task task;
 
 
-    public TaskScheduler(Task task) {
+    public TaskScheduler(Task task, int intervalInSec) {
         if (task == null) {
             throw new NullPointerException("Task cannot be null");
         }
         this.task = task;
+        this.intervalInSec = intervalInSec;
+        this.intervalInMillis = intervalInSec * 1000;
     }
 
     public void start() {
@@ -34,7 +37,7 @@ public class TaskScheduler {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MILLISECOND, 0);
         int second = calendar.get(Calendar.SECOND);
-        second += (10 - second % 10);
+        second += (this.intervalInSec - second % this.intervalInSec);
         calendar.set(Calendar.SECOND, second);
 
         Log.d(TAG, "Scheduling from: " + calendar.getTime());
@@ -43,7 +46,7 @@ public class TaskScheduler {
             public synchronized void run() {
                 TaskScheduler.this.task.execute();
             }
-        }, calendar.getTime(), INTERVAL);
+        }, calendar.getTime(), intervalInMillis);
     }
 
     public void stop() {

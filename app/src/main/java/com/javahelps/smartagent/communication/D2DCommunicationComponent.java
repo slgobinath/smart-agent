@@ -29,6 +29,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
     private Message activeMessage;
     private MessageListener messageListener;
     private ResponseListener responseListener;
+    private DeviceData deviceDataToSend;
 
     public D2DCommunicationComponent(FragmentActivity activity) {
         this.activity = activity;
@@ -70,9 +71,13 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
 
     @Override
     public void send(DeviceData deviceData) {
-        Log.i(TAG, "Sending device data");
-        activeMessage = new Message(Utility.serialize(deviceData));
-        Nearby.Messages.publish(googleApiClient, activeMessage);
+        if (googleApiClient.isConnected()) {
+            Log.i(TAG, "Sending device data");
+            activeMessage = new Message(Utility.serialize(deviceData));
+            Nearby.Messages.publish(googleApiClient, activeMessage);
+        } else {
+            deviceDataToSend = deviceData;
+        }
     }
 
     @Override
@@ -83,7 +88,12 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        publish("Hello World 2");
+        if (this.deviceDataToSend != null) {
+            Log.i(TAG, "Sending device data");
+            activeMessage = new Message(Utility.serialize(deviceDataToSend));
+            Nearby.Messages.publish(googleApiClient, activeMessage);
+            this.deviceDataToSend = null;
+        }
         subscribe();
     }
 

@@ -9,6 +9,7 @@ import com.javahelps.smartagent.communication.D2DCommunicationComponent;
 import com.javahelps.smartagent.communication.DeviceData;
 import com.javahelps.smartagent.communication.HTTPCommunicationComponent;
 import com.javahelps.smartagent.communication.ResponseListener;
+import com.javahelps.smartagent.util.Config;
 
 
 public class CoordinationComponent implements ResponseListener {
@@ -46,6 +47,7 @@ public class CoordinationComponent implements ResponseListener {
     public void send(DeviceData deviceData) {
 
         this.currentDeviceData = deviceData;
+        this.clusterCommunication.connect();
         this.clusterCommunication.send(deviceData);
 
         final Handler handler = new Handler();
@@ -54,10 +56,10 @@ public class CoordinationComponent implements ResponseListener {
             public void run() {
                 clusterCommunication.disconnect();
                 if (currentDeviceData.isActive()) {
-                    Log.i(TAG, "Sending device data " + currentDeviceData.getUser());
+                    Log.i(TAG, "Sending device data to the server " + currentDeviceData.getUser());
                 }
             }
-        }, 100);
+        }, Config.TIME_TO_WAIT_FOR_OTHERS);
     }
 
     @Override
