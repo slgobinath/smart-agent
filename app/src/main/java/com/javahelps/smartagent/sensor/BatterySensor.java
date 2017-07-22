@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
-import android.util.Log;
 
 import com.javahelps.smartagent.util.Constant;
 
@@ -32,7 +31,6 @@ public class BatterySensor extends Sensor {
         float batteryLevel = level * 100 / (float) scale;
         boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
 
-        Log.i("Battery", "Charging: " + isCharging);
         return new Object[]{(int) batteryLevel, isCharging};
     }
 

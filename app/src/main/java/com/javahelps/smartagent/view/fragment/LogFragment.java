@@ -3,23 +3,23 @@ package com.javahelps.smartagent.view.fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.javahelps.smartagent.R;
-import com.javahelps.smartagent.util.Constant;
+import com.javahelps.smartagent.util.Logger;
 
-public class HomeFragment extends Fragment {
+public class LogFragment extends Fragment {
 
     private OnFragmentInteractionListener listener;
-    private Button btnStart;
-    private boolean running;
+    private TextView txtLog;
+    private Handler handler = new Handler();
 
-    public HomeFragment() {
+    public LogFragment() {
         // Required empty public constructor
     }
 
@@ -35,36 +35,26 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_log, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.btnStart = (Button) view.findViewById(R.id.btnStart);
-        String text = running ? Constant.Command.STOP : Constant.Command.START;
-        this.btnStart.setText(text);
-        this.btnStart.setOnClickListener(new View.OnClickListener() {
+        this.txtLog = (TextView) view.findViewById(R.id.txtLog);
+        this.txtLog.setText(Logger.getLogs());
+        Logger.registerListener(new Logger.LogListener() {
             @Override
-            public void onClick(View v) {
-                if (Constant.Command.START.equals(btnStart.getText().toString())) {
-                    // Start
-                    btnStart.setText(Constant.Command.STOP);
-                    listener.onFragmentInteraction(HomeFragment.this, Constant.Command.START);
-                    Toast.makeText(getActivity(), "Smart Agent is started", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Stop
-                    btnStart.setText(Constant.Command.START);
-                    listener.onFragmentInteraction(HomeFragment.this, Constant.Command.STOP);
-                    Toast.makeText(getActivity(), "Smart Agent is stopped", Toast.LENGTH_SHORT).show();
-                }
+            public void onLogChange(String tag, final String message) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        txtLog.append("\n" + message);
+                    }
+                });
             }
         });
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
     }
 
     @Override

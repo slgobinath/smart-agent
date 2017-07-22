@@ -1,7 +1,6 @@
 package com.javahelps.smartagent.communication;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -12,38 +11,45 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.javahelps.smartagent.util.Logger;
+import com.javahelps.smartagent.util.Utility;
 
 public class HTTPCommunicationComponent implements CommunicationComponent, Response.Listener<String>, Response.ErrorListener {
 
     private static final String TAG = "HTTPCommunication";
 
     private final Gson gson = new Gson();
-
+    private final Context context;
     private static final String END_POINT_URL = "http://129.100.227.230:8080/service";
     private final RequestQueue queue;
-    private ResponseListener responseListener;
 
     public HTTPCommunicationComponent(Context context) {
+        this.context = context;
         this.queue = Volley.newRequestQueue(context);
     }
 
     @Override
     public void connect() {
         // Do nothing
-        Log.i(TAG, "Starting the HTTP request queue");
+        Logger.d(TAG, "Starting the HTTP request queue");
         queue.start();
     }
 
     @Override
     public void disconnect() {
         // Do nothing
-        Log.i(TAG, "Stopping the HTTP request queue");
+        Logger.d(TAG, "Stopping the HTTP request queue");
         queue.stop();
     }
 
     @Override
     public void send(DeviceData deviceData) {
-        Log.i(TAG, "Sending the device data to the server");
+
+        if (!Utility.isNetworkAvailable(this.context)) {
+            Logger.i(TAG, "No internet to send data to the server");
+            return;
+        }
+        Logger.i(TAG, "Sending the data to the server");
         JsonRequest<String> request = new JsonRequest<String>(Request.Method.POST, END_POINT_URL,
                 gson.toJson(deviceData), this, this) {
 
@@ -58,16 +64,16 @@ public class HTTPCommunicationComponent implements CommunicationComponent, Respo
 
     @Override
     public void onResponse(String response) {
-        Log.d(TAG, "Server response: " + response);
+        Logger.i(TAG, "Response from the server: " + response);
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
-
+        Logger.i(TAG, "Error in sending data to the server");
     }
 
     @Override
     public void setListener(ResponseListener listener) {
-        this.responseListener = listener;
+        // Do nothing
     }
 }

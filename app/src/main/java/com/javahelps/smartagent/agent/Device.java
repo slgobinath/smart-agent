@@ -9,6 +9,7 @@ import com.javahelps.smartagent.sensor.Sensor;
 import com.javahelps.smartagent.sensor.SensorListener;
 import com.javahelps.smartagent.util.Config;
 import com.javahelps.smartagent.util.Constant;
+import com.javahelps.smartagent.util.Logger;
 import com.javahelps.smartagent.util.Session;
 
 import java.io.Serializable;
@@ -43,13 +44,11 @@ public class Device {
             Sensor sensor = Sensor.create(this.context, sensorName);
             if (sensor != null) {
 
-                Log.i(TAG, String.format("Sensor %s is available", sensor.toString()));
-
                 sensor.setListener(new SensorListener() {
                     @Override
                     public void onSuccess(String sensor, Object... extras) {
                         if (extras != null) {
-                            Log.i(TAG, "Received " + sensor + " " + Arrays.toString(extras));
+                            Logger.i(TAG, "Retrieved " + sensor.toLowerCase() + " " + Arrays.toString(extras));
 
                             if (Constant.Sensor.LOCATION.equals(sensor)) {
                                 Device.this.sensorData.put(sensor, new SensorData(sensor, (Float) extras[2], new double[]{(Double) extras[0], (Double) extras[1]}));
@@ -100,6 +99,8 @@ public class Device {
             this.lastBatteryLevel = (Integer) data[0];
             this.charging = (Boolean) data[1];
             this.lastBatteryLevelTime = currentTime;
+            Log.i(TAG, "Current battery level: " + this.lastBatteryLevel);
+            Log.i(TAG, "Is battery charging: " + this.charging);
         }
         return lastBatteryLevel;
     }
@@ -114,8 +115,6 @@ public class Device {
         int computingPower;
         int currentBatteryLevel = this.currentBatteryLevel();
         int minBatteryRequirement = sensor.getMinimumBatteryRequirement();
-
-        Log.d(TAG, "Battery level: " + currentBatteryLevel);
 
         if (sensor == null || (!charging &&
                 (currentBatteryLevel <= Config.MIN_BATTERY_LEVEL || currentBatteryLevel < minBatteryRequirement))) {
@@ -143,7 +142,7 @@ public class Device {
         } else {
             computingPower = currentBatteryLevel / 10;
         }
-
+        Log.i(TAG, "Current computing power: " + computingPower);
         return computingPower;
     }
 }

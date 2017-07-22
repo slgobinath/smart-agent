@@ -2,7 +2,6 @@ package com.javahelps.smartagent.coordination;
 
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 import com.javahelps.smartagent.communication.CommunicationComponent;
 import com.javahelps.smartagent.communication.D2DCommunicationComponent;
@@ -10,6 +9,7 @@ import com.javahelps.smartagent.communication.DeviceData;
 import com.javahelps.smartagent.communication.HTTPCommunicationComponent;
 import com.javahelps.smartagent.communication.ResponseListener;
 import com.javahelps.smartagent.util.Config;
+import com.javahelps.smartagent.util.Logger;
 
 
 public class CoordinationComponent implements ResponseListener {
@@ -46,6 +46,7 @@ public class CoordinationComponent implements ResponseListener {
      */
     public void send(DeviceData deviceData) {
 
+        Logger.i(TAG, "Publishing the data to cluster");
         this.currentDeviceData = deviceData;
         this.clusterCommunication.connect();
         this.clusterCommunication.send(deviceData);
@@ -56,7 +57,6 @@ public class CoordinationComponent implements ResponseListener {
             public void run() {
                 clusterCommunication.disconnect();
                 if (currentDeviceData.isActive()) {
-                    Log.i(TAG, "Sending device data to the server " + currentDeviceData.getUser());
                     serviceCommunication.send(currentDeviceData);
                 }
             }
@@ -66,9 +66,9 @@ public class CoordinationComponent implements ResponseListener {
     @Override
     public void onSuccess(CommunicationComponent communicationComponent, Object data) {
 
-        Log.i(TAG, "Received from another device");
         if (communicationComponent == this.clusterCommunication) {
             DeviceData deviceData = (DeviceData) data;
+            Logger.i(TAG, "Received data from " + deviceData.getUser());
             if (this.currentDeviceData.getComputingPower() >= deviceData.getComputingPower()) {
                 this.currentDeviceData.merge(deviceData);
             } else {

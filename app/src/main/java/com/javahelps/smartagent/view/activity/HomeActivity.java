@@ -11,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -23,9 +22,11 @@ import com.javahelps.smartagent.agent.SmartAgent;
 import com.javahelps.smartagent.communication.D2DCommunicationComponent;
 import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.GoogleAuthenticator;
+import com.javahelps.smartagent.util.Logger;
 import com.javahelps.smartagent.util.Session;
 import com.javahelps.smartagent.util.Utility;
 import com.javahelps.smartagent.view.fragment.HomeFragment;
+import com.javahelps.smartagent.view.fragment.LogFragment;
 import com.javahelps.smartagent.view.fragment.OnFragmentInteractionListener;
 import com.javahelps.smartagent.view.fragment.PermissionFragment;
 
@@ -106,7 +107,7 @@ public class HomeActivity extends AppCompatActivity implements
             if (resultCode == RESULT_OK) {
                 d2DCommunicationComponent.connect();
             } else {
-                Log.e(TAG, "GoogleApiClient connection failed. Unable to resolve.");
+                Logger.e(TAG, "GoogleApiClient connection failed. Unable to resolve.");
             }
         }
     }
@@ -115,17 +116,18 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        Log.i("HomeActivity", "Navigation item selected");
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
+            this.homeFragment.setRunning(this.smartAgent.isActive());
+            this.homeFragment.setListener(this);
             fragment = this.homeFragment;
         } else if (id == R.id.nav_permission) {
             fragment = new PermissionFragment();
         } else if (id == R.id.nav_manage) {
-
+            fragment = new LogFragment();
         } else if (id == R.id.nav_logout) {
             this.googleAuthenticator.signOut();
         }
@@ -198,6 +200,7 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         this.progressDialog.dismiss();
+        this.smartAgent.stop();
         super.onDestroy();
     }
 

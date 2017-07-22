@@ -32,5 +32,5 @@ public class Config {
 
     public static final int TIME_TO_COLLECT_DATA = 5000;  // In milliseconds
 
-    public static final int TIME_TO_WAIT_FOR_OTHERS = 5000;  // In milliseconds
+    public static final int TIME_TO_WAIT_FOR_OTHERS = 10000;  // In milliseconds
 }

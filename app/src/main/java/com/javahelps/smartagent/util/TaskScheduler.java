@@ -1,8 +1,6 @@
 package com.javahelps.smartagent.util;
 
 
-import android.util.Log;
-
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,7 +38,7 @@ public class TaskScheduler {
         second += (this.intervalInSec - second % this.intervalInSec);
         calendar.set(Calendar.SECOND, second);
 
-        Log.d(TAG, "Scheduling from: " + calendar.getTime());
+        Logger.d(TAG, "Scheduling from: " + calendar.getTime());
 
         this.timer.scheduleAtFixedRate(new TimerTask() {
             public synchronized void run() {

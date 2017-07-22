@@ -3,7 +3,6 @@ package com.javahelps.smartagent.util;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -108,11 +107,11 @@ public class GoogleAuthenticator implements GoogleApiClient.OnConnectionFailedLi
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "Successfully signed in");
+                            Logger.d(TAG, "Successfully signed in");
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             GoogleAuthenticator.this.userChangeListener.onChange(user);
                         } else {
-                            Log.w(TAG, "Failed to sign in", task.getException());
+                            Logger.w(TAG, "Failed to sign in", task.getException());
                             Toast.makeText(GoogleAuthenticator.this.activity, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             GoogleAuthenticator.this.userChangeListener.onChange(null);
                         }

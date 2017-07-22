@@ -5,15 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
-import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
+import com.javahelps.smartagent.util.Logger;
 import com.javahelps.smartagent.util.Utility;
 
 public class D2DCommunicationComponent implements CommunicationComponent, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -40,8 +39,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
         messageListener = new MessageListener() {
             @Override
             public void onFound(Message message) {
-                Log.d(TAG, "Found message from another device");
-//                String messageAsString = new String(message.getContent());
+                Logger.d(TAG, "Found message from another device");
                 DeviceData deviceData = (DeviceData) Utility.deserialize(message.getContent());
                 responseListener.onSuccess(D2DCommunicationComponent.this, deviceData);
 
@@ -49,14 +47,14 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
 
             @Override
             public void onLost(Message message) {
-                Log.d(TAG, "Lost sight of message");
+                Logger.d(TAG, "Lost sight of message");
             }
         };
     }
 
     @Override
     public synchronized void connect() {
-        Log.i(TAG, "Connect to client");
+        Logger.d(TAG, "Connecting to client");
         googleApiClient.connect();
     }
 
@@ -72,7 +70,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
     @Override
     public synchronized void send(DeviceData deviceData) {
         if (googleApiClient.isConnected()) {
-            Log.i(TAG, "Sending device data");
+            Logger.d(TAG, "Sending device data");
             activeMessage = new Message(Utility.serialize(deviceData));
             Nearby.Messages.publish(googleApiClient, activeMessage);
         } else {
@@ -89,7 +87,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (this.deviceDataToSend != null) {
-            Log.i(TAG, "Sending device data");
+            Logger.d(TAG, "Sending device data");
             activeMessage = new Message(Utility.serialize(deviceDataToSend));
             Nearby.Messages.publish(googleApiClient, activeMessage);
             this.deviceDataToSend = null;
@@ -99,7 +97,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
 
     @Override
     public void onConnectionSuspended(int cause) {
-        Log.e(TAG, "GoogleApiClient disconnected with cause: " + cause);
+        Logger.e(TAG, "GoogleApiClient disconnected with cause: " + cause);
     }
 
     @Override
@@ -111,18 +109,12 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
                 e.printStackTrace();
             }
         } else {
-            Log.e(TAG, "GoogleApiClient connection failed");
+            Logger.e(TAG, "GoogleApiClient connection failed");
         }
     }
 
-    public void publish(String message) {
-        Log.i(TAG, "Publishing message: " + message);
-        activeMessage = new Message(message.getBytes());
-        Nearby.Messages.publish(googleApiClient, activeMessage);
-    }
-
     private void unpublish() {
-        Log.i(TAG, "Unpublishing.");
+        Logger.d(TAG, "Unpublishing message.");
         if (activeMessage != null) {
             Nearby.Messages.unpublish(googleApiClient, activeMessage);
             activeMessage = null;
@@ -130,15 +122,12 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
     }
 
     private void subscribe() {
-        Log.i(TAG, "Subscribing.");
-        SubscribeOptions options = new SubscribeOptions.Builder()
-                .setStrategy(Strategy.BLE_ONLY)
-                .build();
+        Logger.d(TAG, "Subscribing.");
         Nearby.Messages.subscribe(googleApiClient, messageListener, SubscribeOptions.DEFAULT);
     }
 
     private void unsubscribe() {
-        Log.i(TAG, "Unsubscribing.");
+        Logger.d(TAG, "Unsubscribing.");
         Nearby.Messages.unsubscribe(googleApiClient, messageListener);
     }
 
