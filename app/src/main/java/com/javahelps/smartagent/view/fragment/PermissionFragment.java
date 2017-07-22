@@ -141,7 +141,6 @@ public class PermissionFragment extends Fragment {
         private ImageView imgIcon;
         private TextView txtFeature;
         private TextView txtDescription;
-        private Feature feature;
 
         public FeatureViewHolder(View itemView) {
             super(itemView);
@@ -152,7 +151,6 @@ public class PermissionFragment extends Fragment {
         }
 
         public void setFeature(Feature feature) {
-            this.feature = feature;
             this.imgIcon.setImageDrawable(feature.getIcon());
             this.txtFeature.setText(feature.getName());
             this.txtDescription.setText(feature.getDescription());

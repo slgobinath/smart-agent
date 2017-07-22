@@ -66,6 +66,7 @@ public class CoordinationComponent implements ResponseListener {
     @Override
     public void onSuccess(CommunicationComponent communicationComponent, Object data) {
 
+        Log.i(TAG, "Received from another device");
         if (communicationComponent == this.clusterCommunication) {
             DeviceData deviceData = (DeviceData) data;
             if (this.currentDeviceData.getComputingPower() >= deviceData.getComputingPower()) {

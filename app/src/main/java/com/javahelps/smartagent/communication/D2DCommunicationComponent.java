@@ -14,7 +14,6 @@ import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
 import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
-import com.google.gson.Gson;
 import com.javahelps.smartagent.util.Utility;
 
 public class D2DCommunicationComponent implements CommunicationComponent, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -25,7 +24,6 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
 
     private final FragmentActivity activity;
     private GoogleApiClient googleApiClient;
-    private final Gson gson = new Gson();
     private Message activeMessage;
     private MessageListener messageListener;
     private ResponseListener responseListener;
@@ -42,26 +40,28 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
         messageListener = new MessageListener() {
             @Override
             public void onFound(Message message) {
-                String messageAsString = new String(message.getContent());
-                Log.d(TAG, "Found message: " + messageAsString);
+                Log.d(TAG, "Found message from another device");
+//                String messageAsString = new String(message.getContent());
+                DeviceData deviceData = (DeviceData) Utility.deserialize(message.getContent());
+                responseListener.onSuccess(D2DCommunicationComponent.this, deviceData);
+
             }
 
             @Override
             public void onLost(Message message) {
-                String messageAsString = new String(message.getContent());
-                Log.d(TAG, "Lost sight of message: " + messageAsString);
+                Log.d(TAG, "Lost sight of message");
             }
         };
     }
 
     @Override
-    public void connect() {
+    public synchronized void connect() {
         Log.i(TAG, "Connect to client");
         googleApiClient.connect();
     }
 
     @Override
-    public void disconnect() {
+    public synchronized void disconnect() {
         if (googleApiClient.isConnected()) {
             unpublish();
             unsubscribe();
@@ -70,7 +70,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
     }
 
     @Override
-    public void send(DeviceData deviceData) {
+    public synchronized void send(DeviceData deviceData) {
         if (googleApiClient.isConnected()) {
             Log.i(TAG, "Sending device data");
             activeMessage = new Message(Utility.serialize(deviceData));
@@ -129,7 +129,6 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
         }
     }
 
-    // Subscribe to receive messages.
     private void subscribe() {
         Log.i(TAG, "Subscribing.");
         SubscribeOptions options = new SubscribeOptions.Builder()

@@ -42,6 +42,7 @@ public class HomeActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle toggle;
     private D2DCommunicationComponent d2DCommunicationComponent;
     private SmartAgent smartAgent;
+    private HomeFragment homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,9 @@ public class HomeActivity extends AppCompatActivity implements
         View header = navigationView.getHeaderView(0);
         this.txtUsername = (TextView) header.findViewById(R.id.txtUsername);
 
-        this.changeFragment(new HomeFragment());
+        this.homeFragment = new HomeFragment();
+        this.homeFragment.setListener(this);
+        this.changeFragment(this.homeFragment);
 
         this.initializeServices();
     }
@@ -118,8 +121,7 @@ public class HomeActivity extends AppCompatActivity implements
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
-            fragment = new HomeFragment();
+            fragment = this.homeFragment;
         } else if (id == R.id.nav_permission) {
             fragment = new PermissionFragment();
         } else if (id == R.id.nav_manage) {

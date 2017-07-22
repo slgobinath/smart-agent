@@ -11,7 +11,6 @@ import com.javahelps.smartagent.sensor.Sensor;
 import com.javahelps.smartagent.util.Config;
 import com.javahelps.smartagent.util.TaskScheduler;
 
-import java.util.Map;
 import java.util.TimerTask;
 
 

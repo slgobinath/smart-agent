@@ -36,11 +36,11 @@ public class DeviceData implements Serializable {
         this.sensorDataMap = sensorDataMap;
     }
 
-    public boolean isActive() {
+    public synchronized boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public synchronized void setActive(boolean active) {
         this.active = active;
     }
 

@@ -13,10 +13,14 @@ import com.javahelps.smartagent.R;
 
 public class HomeFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener listener;
 
     public HomeFragment() {
         // Required empty public constructor
+    }
+
+    public void setListener(OnFragmentInteractionListener mListener) {
+        this.listener = mListener;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("HomeFragment", "Connecting");
-                mListener.onFragmentInteraction(HomeFragment.this, "CONNECT");
+                listener.onFragmentInteraction(HomeFragment.this, "CONNECT");
             }
         });
 
@@ -46,7 +50,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("HomeFragment", "Sending http request");
-                mListener.onFragmentInteraction(HomeFragment.this, "SEND");
+                listener.onFragmentInteraction(HomeFragment.this, "SEND");
             }
         });
 
@@ -54,7 +58,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("HomeFragment", "Disconnecting");
-                mListener.onFragmentInteraction(HomeFragment.this, "DISCONNECT");
+                listener.onFragmentInteraction(HomeFragment.this, "DISCONNECT");
             }
         });
     }
@@ -63,7 +67,7 @@ public class HomeFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -73,6 +77,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 }

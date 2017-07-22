@@ -12,6 +12,7 @@ import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.Session;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,22 +49,12 @@ public class Device {
                     @Override
                     public void onSuccess(String sensor, Object... extras) {
                         if (extras != null) {
-//                            Log.i(TAG, "Received " + sensor + " " + Arrays.toString(extras));
+                            Log.i(TAG, "Received " + sensor + " " + Arrays.toString(extras));
 
                             if (Constant.Sensor.LOCATION.equals(sensor)) {
                                 Device.this.sensorData.put(sensor, new SensorData(sensor, (Float) extras[2], new double[]{(Double) extras[0], (Double) extras[1]}));
                             } else {
                                 Device.this.sensorData.put(sensor, new SensorData(sensor, (Float) extras[1], (Serializable) extras[0]));
-                            }
-
-                            if (Device.this.sensorData.size() == Device.this.sensors.size()) {
-                                Log.i(TAG, "All received");
-                                DeviceData deviceData = new DeviceData();
-                                deviceData.setActive(true);
-                                deviceData.setComputingPower(Device.this.computingPower());
-                                deviceData.addUser((String) Session.INSTANCE.get(Constant.Common.USER_EMAIL));
-                                deviceData.setSensorDataMap(new HashMap<>(sensorData));
-                                Device.this.recentDeviceData = deviceData;
                             }
                         }
                     }
@@ -80,6 +71,7 @@ public class Device {
     }
 
     public void clearData() {
+        this.recentDeviceData = null;
         this.sensorData.clear();
     }
 
@@ -88,6 +80,15 @@ public class Device {
     }
 
     public DeviceData getRecentDeviceData() {
+
+        if (this.recentDeviceData == null && !this.sensorData.isEmpty()) {
+            DeviceData deviceData = new DeviceData();
+            deviceData.setActive(true);
+            deviceData.setComputingPower(Device.this.computingPower());
+            deviceData.addUser((String) Session.INSTANCE.get(Constant.Common.USER_EMAIL));
+            deviceData.setSensorDataMap(new HashMap<>(sensorData));
+            this.recentDeviceData = deviceData;
+        }
         return recentDeviceData;
     }
 

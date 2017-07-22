@@ -19,7 +19,7 @@ public class HTTPCommunicationComponent implements CommunicationComponent, Respo
 
     private final Gson gson = new Gson();
 
-    private static final String END_POINT_URL = "http://10.0.2.2:8080/service";
+    private static final String END_POINT_URL = "http://129.100.227.230:8080/service";
     private final RequestQueue queue;
     private ResponseListener responseListener;
 
