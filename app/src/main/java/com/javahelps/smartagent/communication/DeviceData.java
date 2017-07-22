@@ -8,6 +8,7 @@ public class DeviceData implements Serializable {
 
     private List<String> users;
     private int computingPower;
+    private boolean active;
     private Map<String, SensorData> sensorDataMap;
 
     public String getUser() {
@@ -32,6 +33,14 @@ public class DeviceData implements Serializable {
 
     public void setSensorDataMap(Map<String, SensorData> sensorDataMap) {
         this.sensorDataMap = sensorDataMap;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void merge(DeviceData deviceData) {

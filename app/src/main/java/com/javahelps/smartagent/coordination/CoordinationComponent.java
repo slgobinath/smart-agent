@@ -1,19 +1,19 @@
 package com.javahelps.smartagent.coordination;
 
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.javahelps.smartagent.communication.CommunicationComponent;
 import com.javahelps.smartagent.communication.D2DCommunicationComponent;
 import com.javahelps.smartagent.communication.DeviceData;
 import com.javahelps.smartagent.communication.HTTPCommunicationComponent;
 import com.javahelps.smartagent.communication.ResponseListener;
-import com.javahelps.smartagent.communication.SensorData;
 
 
 public class CoordinationComponent implements ResponseListener {
+
+    private static final String TAG = "CoordinationComponent";
 
     private final D2DCommunicationComponent clusterCommunication;
     private final HTTPCommunicationComponent serviceCommunication;
@@ -38,10 +38,6 @@ public class CoordinationComponent implements ResponseListener {
         return coordinationComponent;
     }
 
-    public void send(SensorData sensorData) {
-
-    }
-
     /**
      * Send the data of this device to other devices in the cluster.
      *
@@ -51,20 +47,17 @@ public class CoordinationComponent implements ResponseListener {
 
         this.currentDeviceData = deviceData;
         this.clusterCommunication.send(deviceData);
-    }
 
-    public void send(int computingPower) {
-
-        this.clusterCommunication.connect();
-        this.clusterCommunication.publish(Integer.toString(computingPower));
-
-        Looper looper = new Looper();
-        Handler handler = new Handler(new Handler.Callback() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
-            public boolean handleMessage(Message msg) {
-                return false;
+            public void run() {
+                clusterCommunication.disconnect();
+                if (currentDeviceData.isActive()) {
+                    Log.i(TAG, "Sending device data " + currentDeviceData.getUser());
+                }
             }
-        }, 45);
+        }, 100);
     }
 
     @Override
@@ -76,6 +69,8 @@ public class CoordinationComponent implements ResponseListener {
                 this.currentDeviceData.merge(deviceData);
             } else {
                 // Don't send some other device will send it
+                this.currentDeviceData.setActive(false);
+                this.clusterCommunication.disconnect();
             }
         }
     }

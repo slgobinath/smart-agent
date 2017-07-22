@@ -22,15 +22,19 @@ import com.javahelps.smartagent.R;
 import com.javahelps.smartagent.communication.D2DCommunicationComponent;
 import com.javahelps.smartagent.util.Constant;
 import com.javahelps.smartagent.util.GoogleAuthenticator;
+import com.javahelps.smartagent.util.TaskScheduler;
 import com.javahelps.smartagent.util.Utility;
 import com.javahelps.smartagent.view.fragment.HomeFragment;
 import com.javahelps.smartagent.view.fragment.OnFragmentInteractionListener;
 import com.javahelps.smartagent.view.fragment.PermissionFragment;
 
+import java.util.Date;
+
 public class HomeActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         OnFragmentInteractionListener,
-        GoogleAuthenticator.UserChangeListener {
+        GoogleAuthenticator.UserChangeListener,
+        TaskScheduler.Task {
 
     private static final String TAG = "HomeActivity";
     private ProgressDialog progressDialog;
@@ -39,15 +43,16 @@ public class HomeActivity extends AppCompatActivity implements
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private D2DCommunicationComponent d2DCommunicationComponent;
+    private TaskScheduler taskScheduler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Initialize the user interface
         this.progressDialog = new ProgressDialog(this);
         this.progressDialog.setMessage("Loading...");
-        this.googleAuthenticator = new GoogleAuthenticator(this, this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,8 +68,13 @@ public class HomeActivity extends AppCompatActivity implements
         View header = navigationView.getHeaderView(0);
         this.txtUsername = (TextView) header.findViewById(R.id.txtUsername);
 
-        changeFragment(new HomeFragment());
+        this.changeFragment(new HomeFragment());
 
+        this.initializeServices();
+    }
+
+    private void initializeServices() {
+        this.googleAuthenticator = new GoogleAuthenticator(this, this);
         if (this.googleAuthenticator.getUser() == null) {
             this.googleAuthenticator.signIn();
         } else {
@@ -72,6 +82,7 @@ public class HomeActivity extends AppCompatActivity implements
         }
 
         this.d2DCommunicationComponent = new D2DCommunicationComponent(this);
+        this.taskScheduler = new TaskScheduler(this);
     }
 
     @Override
@@ -127,16 +138,10 @@ public class HomeActivity extends AppCompatActivity implements
         return true;
     }
 
-    /**
-     * Change the active fragment to the given one.
-     *
-     * @param fragment
-     */
     private void changeFragment(Fragment fragment) {
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
-//        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -149,11 +154,14 @@ public class HomeActivity extends AppCompatActivity implements
             }
         } else if (fragment instanceof HomeFragment) {
             if ("CONNECT".equals(command)) {
-                d2DCommunicationComponent.connect();
+//                d2DCommunicationComponent.connect();
+                this.taskScheduler.start();
+
             } else if ("DISCONNECT".equals(command)) {
-                d2DCommunicationComponent.disconnect();
+//                d2DCommunicationComponent.disconnect();
             } else if ("SEND".equals(command)) {
-                d2DCommunicationComponent.publish("Hello world2");
+//                d2DCommunicationComponent.publish("Hello world2");
+                this.taskScheduler.stop();
             }
         }
     }
@@ -203,5 +211,10 @@ public class HomeActivity extends AppCompatActivity implements
     @Override
     public void hideProgressDialog() {
         this.progressDialog.hide();
+    }
+
+    @Override
+    public void execute() {
+        Log.i(TAG, "Scheduled task at " + new Date());
     }
 }
