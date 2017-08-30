@@ -28,7 +28,7 @@ public class Config {
 
     public static final int LOW_COMPUTING_POWER = 2;
 
-    public static final int DATA_COLLECTION_INTERVAL = 20;  // In seconds
+    public static final int DATA_COLLECTION_INTERVAL = 30;  // In seconds
 
     public static final int TIME_TO_COLLECT_DATA = 5000;  // In milliseconds
 

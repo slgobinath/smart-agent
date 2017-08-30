@@ -73,6 +73,7 @@ public class D2DCommunicationComponent implements CommunicationComponent, Google
             Logger.d(TAG, "Sending device data");
             activeMessage = new Message(Utility.serialize(deviceData));
             Nearby.Messages.publish(googleApiClient, activeMessage);
+            this.deviceDataToSend = null;
         } else {
             deviceDataToSend = deviceData;
         }
